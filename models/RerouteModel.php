@@ -9,7 +9,8 @@ class RerouteModel extends BaseModel
 		return array(
 			'id' => AttributeType::Number,
 			'oldUrl' => array(AttributeType::String, 'required' => true),
-			'newUrl' => array(AttributeType::String, 'required' => true),
+			'targetEntry' => array(AttributeType::Number, 'required' => true),
+			'targetLocale' => array(AttributeType::String, 'required' => true),
 			'method' => array(AttributeType::Number, 'required' => true)
 		);
 	}

@@ -43,7 +43,11 @@ class ReroutePlugin extends BasePlugin
 			$reroute = craft()->reroute->getByUrl($url);
 
 			if ($reroute) {
-				craft()->request->redirect($reroute['newUrl'], true, $reroute['method']);
+				$entry = craft()->entries->getEntryById($reroute['targetEntry'], $reroute['targetLocale']);
+
+				if ($entry) {
+					craft()->request->redirect($entry->getUrl(), true, $reroute['method']);
+				}
 			}
 		}
 	}

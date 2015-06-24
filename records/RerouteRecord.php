@@ -13,7 +13,8 @@ class RerouteRecord extends BaseRecord
 	{
 		return array(
 			'oldUrl' => array(AttributeType::String, 'required' => true),
-			'newUrl' => array(AttributeType::String, 'required' => true),
+			'targetEntry' => array(AttributeType::Number, 'required' => true),
+			'targetLocale' => array(AttributeType::String, 'required' => true),
 			'method' => array(AttributeType::Number, 'required' => true)
 		);
 	}

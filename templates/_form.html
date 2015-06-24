@@ -3,12 +3,12 @@
 
 {% if rerouteId is not defined %}{% set rerouteId = null %}{% endif %}
 {% if reroute is not defined %}
-    {% if rerouteId %}
-        {% set reroute = craft.reroute.getById(rerouteId) %}
-        {% if not reroute %}{% exit 404 %}{% endif %}
-    {% else %}
-        {% set reroute = null %}
-    {% endif %}
+	{% if rerouteId %}
+		{% set reroute = craft.reroute.getById(rerouteId) %}
+		{% if not reroute %}{% exit 404 %}{% endif %}
+	{% else %}
+		{% set reroute = null %}
+	{% endif %}
 {% endif %}
 
 {% set title = reroute ? 'Edit Reroute'|t : 'New Reroute'|t %}
@@ -21,7 +21,7 @@
 		<input type="hidden" name="{{ craft.config.csrfTokenName }}" value="{{ craft.request.csrfToken }}">
 
 		{{ forms.textField({
-			label: 'Old Url'|t,
+			label: 'Old URL'|t,
 			required: true,
 			name: 'reroute[oldUrl]',
 			value: reroute ? reroute.oldUrl : null,
@@ -29,13 +29,63 @@
 			instructions: 'Enter relative urls, ex: /path-to-url'
 		}) }}
 
-		{{ forms.textField({
-			label: 'New Url'|t,
-			required: true,
-			name: 'reroute[newUrl]',
-			value: reroute ? reroute.newUrl : null,
-			errors: reroute ? reroute.errors('newUrl') : null,
+		{% set localeOptions = [] %}
+
+		{% for locale in craft.i18n.getSiteLocales() %}
+			{% set localeOptions = localeOptions|merge([{label: locale.name, value: locale.id}]) %}
+		{% endfor %}
+
+		{{ forms.selectField({
+			label: 'Locale to redirect to',
+			id: 'targetLocale',
+			name: 'reroute[targetLocale]',
+			value: reroute ? reroute.targetLocale,
+			options: [{label: 'Select a locale', value: '' }]|merge(localeOptions)
 		}) }}
+
+		<script>
+			document.onready = function() {
+				$('#targetLocale').on('change', function() {
+					self = $(this);
+					locale = self.val();
+
+					$('[id^=element-selector-]').hide();
+					$('[id^=element-selector-]').find('input[type="hidden"]').attr('disabled', 'disabled');
+
+					$('#element-selector-' + locale).show();
+					$('#element-selector-' + locale).find('input[type="hidden"]').removeAttr('disabled');
+				});
+			}
+		</script>
+
+		{% for locale in craft.i18n.getSiteLocaleIds() %}
+			{% set displayNone = '' %}
+			{% set element = '' %}
+			{% if reroute %}
+				{% set displayNone = (locale != reroute.targetLocale) ? 'style="display: none;"' %}
+				{% set element = craft.entries({id: reroute.targetEntry, locale: locale}) %}
+			{% else %}
+				{% set displayNone = 'style="display: none;"' %}
+			{% endif %}
+			<div id="element-selector-{{locale}}" {{displayNone|raw}}>
+				{{ forms.elementSelectField({
+					label: 'Entry',
+					id: 'targetEntry-' ~ locale,
+					name: 'reroute[targetEntry]',
+					instructions: 'Redirect to entry',
+					addButtonLabel: 'Choose',
+					elements: element,
+					elementType: craft.elements.getElementType("Entry"),
+					criteria: {
+						kind: [],
+						localeEnabled: true,
+						locale: locale
+					},
+					limit: 1,
+				  errors: reroute ? reroute.errors('targetEntry') : null,
+				}) }}
+			</div>
+		{% endfor %}
 
 		{{ forms.selectField({
 			label: 'Method'|t,

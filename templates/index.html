@@ -14,16 +14,20 @@
 		<table id="reroutes" class="data fullwidth">
 			<thead>
 				<th scope="col">{{ 'Old Url'|t }}</th>
-				<th scope="col">{{ 'New Url'|t }}</th>
+				<th scope="col">{{ 'Target Entry'|t }}</th>
+				<th scope="col">{{ 'Target Locale'|t }}</th>
 				<th scope="col">{{ 'Method'|t }}</th>
 				<th class="thin"></th>
 				<th scope="col">{{ 'Delete'|t }}</th>
 			</thead>
 			<tbody>
 				{% for reroute in reroutes %}
+					{% set targetEntry = craft.entries({id: reroute.targetEntry, locale: reroute.targetLocale }).first %}
+
 					<tr data-id="{{ reroute.id }}" data-name="{{ 'Reroute for {url}' | t({ url: reroute.oldUrl }) }}">
 						<td><a href="{{ url('reroute/'~reroute.id) }}">{{ reroute.oldUrl }}</a></td>
-						<td>{{ reroute.newUrl }}</td>
+						<td><a href="{{targetEntry.url}}" target="_blank" class="go">{{targetEntry}}</a></td>
+						<td>{{ craft.i18n.getLocaleById(reroute.targetLocale).name }}</td>
 						<td>{{ reroute.method }}</td>
 						<td><a href="{{ reroute.oldUrl }}" target="_blank" class="go">{{ 'View'|t }}</a></td>
 						<td><a class="delete icon" title="{{ 'Delete'|t }}"></a></td>
