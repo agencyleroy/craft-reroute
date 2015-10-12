@@ -54,7 +54,7 @@
 
 					$('#element-selector-' + locale).show();
 					$('#element-selector-' + locale).find('input[type="hidden"]').removeAttr('disabled');
-				});
+				}).trigger('change');
 			}
 		</script>
 
