@@ -40,7 +40,12 @@ class ReroutePlugin extends BasePlugin
 	public function init() {
 		if(craft()->request->isSiteRequest()) {
 			$url = craft()->request->getUrl();
-			$reroute = craft()->reroute->getByUrl($url);
+      $fullUrl = craft()->request->getHostInfo().craft()->request->getRequestUri();
+
+      $shortReroute = craft()->reroute->getByUrl($url);
+      $fullReroute = craft()->reroute->getByUrl($fullUrl);
+
+      $reroute = ($fullReroute) ? $fullReroute : $shortReroute;
 
 			if ($reroute) {
 				$entry = craft()->entries->getEntryById($reroute['targetEntry'], $reroute['targetLocale']);
