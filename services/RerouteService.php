@@ -56,7 +56,7 @@ class RerouteService extends BaseApplicationComponent
 		$reroute = craft()->db->createCommand()
 					->select('id, oldUrl, targetEntry, targetLocale, method')
 					->from('reroute')
-					->where('oldUrl = :url', array(':url' => $url))
+					->where('oldUrl = :url', array(':url' => urldecode($url)))
 					->limit(1)
 					->queryRow();
 
